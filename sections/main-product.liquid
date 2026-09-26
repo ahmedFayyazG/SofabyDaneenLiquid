@@ -1,39 +1,126 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign selected_image = current_variant.featured_image | default: product.featured_image %}
+{% assign fabric_name = '' %}
+{% assign fabric_is_option = false %}
+{% for option in product.options_with_values %}
+  {% assign option_label = option.name | downcase %}
+  {% if option_label contains 'fabric' or option_label contains 'material' %}
+    {% assign fabric_is_option = true %}
+  {% endif %}
+{% endfor %}
+{% unless fabric_is_option %}
+  {% for tag in product.tags %}
+    {% assign fabric_tag = tag | downcase %}
+    {% if fabric_tag contains 'velvet' or fabric_tag contains 'boucle' or fabric_tag contains 'linen' or fabric_tag contains 'leather' or fabric_tag contains 'chenille' %}
+      {% assign fabric_name = tag %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endunless %}
+
 <div class="container pdp-shell">
   {% render 'breadcrumbs' %}
   <div class="product product--reference">
-    <div class="product__visual-column">
-      <product-gallery class="product__gallery">
-        <div class="gallery">
-          <div class="gallery__main">
-            {% assign selected_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
-            {% if selected_image %}{{ selected_image | image_url: width: 1600 | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 900px) 50vw, 100vw', widths: '600,900,1200,1600' }}{% endif %}
-            {% if product.images.size > 1 %}<button class="gallery__arrow gallery__arrow--prev" type="button" data-gallery-prev aria-label="Previous image">←</button><button class="gallery__arrow gallery__arrow--next" type="button" data-gallery-next aria-label="Next image">→</button>{% endif %}
-          </div>
-            {% if product.images.size > 1 %}<div class="gallery__thumbs">{% for img in product.images limit: 20 %}<button class="gallery__thumb" type="button" data-src="{{ img | image_url: width: 1600 }}" aria-current="{% if selected_image.id == img.id %}true{% else %}false{% endif %}" aria-label="View image {{ forloop.index }}">{{ img | image_url: width: 170 | image_tag: alt: '', loading: 'lazy' }}</button>{% endfor %}</div>{% endif %}
-        </div>
-      </product-gallery>
-      {% if section.settings.highlights != blank %}<div class="product__highlights"><p class="product__panel-label">♡ &nbsp; Why it's loved</p>{{ section.settings.highlights }}</div>{% endif %}
-      <div class="product__specifications"><p class="product__panel-label">♢ &nbsp; Specifications</p><details open><summary>Product description</summary><div class="product__description">{{ product.description }}</div></details>
-        {% if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm %}<details><summary>Dimensions</summary><dl>{% if product.metafields.custom.width_cm %}<div><dt>Width</dt><dd>{{ product.metafields.custom.width_cm }} cm</dd></div>{% endif %}{% if product.metafields.custom.depth_cm %}<div><dt>Depth</dt><dd>{{ product.metafields.custom.depth_cm }} cm</dd></div>{% endif %}{% if product.metafields.custom.height_cm %}<div><dt>Height</dt><dd>{{ product.metafields.custom.height_cm }} cm</dd></div>{% endif %}</dl></details>{% endif %}
+    <product-gallery class="product__gallery" aria-label="{{ product.title | escape }} images">
+      <div class="gallery__main">
+        {% if selected_image %}
+          {{ selected_image | image_url: width: 1600 | image_tag: class: 'gallery__image', loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 960px) 55vw, 100vw', widths: '500,800,1100,1600' }}
+        {% endif %}
+        {% if product.images.size > 1 %}
+          <button class="gallery__arrow gallery__arrow--prev" type="button" data-gallery-prev aria-label="Previous product image">←</button>
+          <button class="gallery__arrow gallery__arrow--next" type="button" data-gallery-next aria-label="Next product image">→</button>
+        {% endif %}
       </div>
-    </div>
+      {% if product.images.size > 1 %}
+        <div class="gallery__thumbs" aria-label="Product image thumbnails">
+          {% for image in product.images limit: 20 %}
+            <button class="gallery__thumb" type="button" data-src="{{ image | image_url: width: 1600 }}" aria-current="{% if image.id == selected_image.id %}true{% else %}false{% endif %}" aria-label="Show image {{ forloop.index }} of {{ product.images.size }}">
+              {{ image | image_url: width: 180 | image_tag: alt: image.alt, loading: 'lazy' }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </product-gallery>
+
     <div class="product__details">
-      <p class="product__eyebrow">{{ section.settings.eyebrow }}</p>
-      <h1 class="product__title">{{ product.title }}</h1>
-      {% if product.metafields.reviews.rating.value %}<div class="product__rating"><span aria-hidden="true">★★★★★</span> {{ product.metafields.reviews.rating.value.rating }}{% if product.metafields.reviews.rating_count %} · {{ product.metafields.reviews.rating_count }} reviews{% endif %}</div>{% endif %}
-      {% if section.settings.assurance != blank %}<div class="product__assurance">{{ section.settings.assurance }}</div>{% endif %}
-      <div class="product__price money" data-price>{{ product.selected_or_first_available_variant.price | money }}{% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}<s>{{ product.selected_or_first_available_variant.compare_at_price | money }}</s>{% endif %}</div>
-      {% if section.settings.finance != blank %}<p class="product__finance">{{ section.settings.finance }}</p>{% endif %}
-      <div class="product__delivery"><span>♧ &nbsp; {{ section.settings.delivery_text }}</span>{% if section.settings.size_guide != blank %}<a href="{{ section.settings.size_guide }}">▤ &nbsp; Size guide</a>{% endif %}</div>
-      <product-form><form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data"><input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-      {% unless product.has_only_default_variant %}<swatch-picker data-variants="{{ product.variants | json | escape }}">{% for opt in product.options_with_values %}{% assign option_name = opt.name | downcase %}<fieldset class="swatch-picker{% if option_name contains 'colour' or option_name contains 'color' or option_name contains 'fabric' or option_name contains 'material' %} swatch-picker--fabric{% endif %}"><legend class="swatch-picker__label">{% if option_name contains 'size' or option_name contains 'seater' %}Select sofa type{% else %}Select {{ opt.name }}{% endif %}<span data-selected>{{ opt.selected_value }}</span></legend><div class="swatch-picker__options">{% for val in opt.values %}<label class="swatch-picker__option"><input class="swatch-picker__input" type="radio" name="options[{{ opt.name | escape }}]" value="{{ val.name | escape }}"{% if val.selected %} checked{% endif %}><span class="swatch-picker__chip swatch-picker__chip--text">{% if val.swatch.color %}<i style="background:{{ val.swatch.color }}"></i>{% elsif val.swatch.image %}<i style="background-image:url('{{ val.swatch.image | image_url: width: 60 }}')"></i>{% endif %}{{ val.name }}</span></label>{% endfor %}</div></fieldset>{% endfor %}</swatch-picker>{% endunless %}
-      {% if section.settings.swatch_url != blank %}<a class="product__swatch-link" href="{{ section.settings.swatch_url }}">Not sure about the colour? <strong>Order fabric samples →</strong></a>{% endif %}
-      <div class="product__buy-row"><label class="visually-hidden" for="Quantity-{{ section.id }}">Quantity</label><input id="Quantity-{{ section.id }}" name="quantity" type="number" value="1" min="1"><button type="submit" class="btn btn--primary"{% unless product.available %} disabled{% endunless %}>{% if product.available %}Add to cart{% else %}Sold out{% endif %}</button></div>
-      </form></product-form>
-      <div class="product__benefits"><div>{{ section.settings.benefit_one }}</div><div>{{ section.settings.benefit_two }}</div><div>{{ section.settings.benefit_three }}</div><div>{{ section.settings.benefit_four }}</div></div>
+      <p class="product__eyebrow">{{ product.vendor | escape }}{% if product.type != blank %} / {{ product.type | escape }}{% endif %}</p>
+      <h1 class="product__title">{{ product.title | escape }}</h1>
+      <div class="product__price money" data-price>
+        {{ current_variant.price | money }}
+        {% if current_variant.compare_at_price > current_variant.price %}<s>{{ current_variant.compare_at_price | money }}</s>{% endif %}
+      </div>
+      {% if product.description != blank %}
+        <p class="product__summary">{{ product.description | strip_html | truncatewords: 35 }}</p>
+      {% endif %}
+
+      <product-form>
+        <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          {% if fabric_name != blank %}
+            <div class="product__fabric">
+              <p class="product__option-title">Fabric <span>{{ fabric_name | escape }}</span></p>
+              <div class="product__fabric-value"><span class="product__fabric-icon" aria-hidden="true"></span>{{ fabric_name | escape }}</div>
+            </div>
+          {% endif %}
+          {% unless product.has_only_default_variant %}
+            <swatch-picker data-variants="{{ product.variants | json | escape }}">
+              {% for option in product.options_with_values %}
+                {% assign option_label = option.name | downcase %}
+                {% assign is_colour = false %}
+                {% if option_label contains 'colour' or option_label contains 'color' %}
+                  {% assign is_colour = true %}
+                {% endif %}
+                <fieldset class="swatch-picker{% if is_colour %} swatch-picker--colour{% endif %}">
+                  <legend class="swatch-picker__label">{{ option.name | escape }} <span data-selected>{{ option.selected_value | escape }}</span></legend>
+                  <div class="swatch-picker__options">
+                    {% for value in option.values %}
+                      <label class="swatch-picker__option{% if is_colour %} swatch-picker__option--colour{% endif %}">
+                        <input class="swatch-picker__input" type="radio" name="options[{{ option.name | escape }}]" value="{{ value.name | escape }}" {% if value.selected %}checked{% endif %} {% unless value.available %}data-unavailable="true"{% endunless %}>
+                        <span class="swatch-picker__chip swatch-picker__chip--text">
+                          {% if is_colour %}
+                            <i class="swatch-picker__tone swatch-picker__tone--{{ value.name | handleize }}" aria-hidden="true" {% if value.swatch.color %}style="background-color:{{ value.swatch.color }}"{% elsif value.swatch.image %}style="background-image:url('{{ value.swatch.image | image_url: width: 80 }}')"{% endif %}></i>
+                          {% endif %}
+                          {{ value.name | escape }}
+                        </span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </fieldset>
+              {% endfor %}
+            </swatch-picker>
+          {% endunless %}
+          {% if section.settings.swatch_url != blank %}
+            <a class="product__swatch-link" href="{{ section.settings.swatch_url }}">Order a fabric sample →</a>
+          {% endif %}
+          <div class="product__buy-row">
+            <label for="Quantity-{{ section.id }}">Quantity</label>
+            <input id="Quantity-{{ section.id }}" name="quantity" type="number" value="1" min="1">
+            <button type="submit" class="btn btn--primary" {% unless current_variant.available %}disabled{% endunless %}>{% if current_variant.available %}Add to basket{% else %}Sold out{% endif %}</button>
+          </div>
+        </form>
+      </product-form>
+
+      <div class="product__content">
+        <h2>Product details</h2>
+        {% if product.description != blank %}
+          <div class="product__description rte">{{ product.description }}</div>
+        {% else %}
+          <p>For details about this sofa, please contact our team.</p>
+        {% endif %}
+        {% if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm %}
+          <div class="product__dimensions">
+            <h3>Dimensions</h3>
+            <dl>
+              {% if product.metafields.custom.width_cm %}<div><dt>Width</dt><dd>{{ product.metafields.custom.width_cm }} cm</dd></div>{% endif %}
+              {% if product.metafields.custom.depth_cm %}<div><dt>Depth</dt><dd>{{ product.metafields.custom.depth_cm }} cm</dd></div>{% endif %}
+              {% if product.metafields.custom.height_cm %}<div><dt>Height</dt><dd>{{ product.metafields.custom.height_cm }} cm</dd></div>{% endif %}
+            </dl>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
 {% schema %}
-{"name":"Product page","settings":[{"type":"text","id":"eyebrow","label":"Eyebrow","default":"Made to order · Sofas by Daneen"},{"type":"richtext","id":"highlights","label":"Why it's loved","default":"<ul><li>Made for everyday comfort</li><li>Thoughtful details</li><li>Choose your own finish</li></ul>"},{"type":"richtext","id":"assurance","label":"Assurance text"},{"type":"text","id":"finance","label":"Finance message"},{"type":"text","id":"delivery_text","label":"Delivery message","default":"Delivery details at checkout"},{"type":"url","id":"size_guide","label":"Size guide link"},{"type":"url","id":"swatch_url","label":"Fabric samples link"},{"type":"text","id":"benefit_one","label":"Benefit one","default":"Find the right size"},{"type":"text","id":"benefit_two","label":"Benefit two","default":"Choose your fabric"},{"type":"text","id":"benefit_three","label":"Benefit three","default":"Made for your home"},{"type":"text","id":"benefit_four","label":"Benefit four","default":"Here to help"}]}
+{"name":"Product page","settings":[{"type":"url","id":"swatch_url","label":"Fabric samples link"}]}
 {% endschema %}

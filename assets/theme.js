@@ -129,7 +129,7 @@
         if (price) price.innerHTML = money(match.price) + (match.compare_at_price > match.price ? ` <s>${money(match.compare_at_price)}</s>` : '');
         if (submit) {
           submit.disabled = !match.available;
-          submit.textContent = match.available ? 'Add to cart' : 'Sold out';
+          submit.textContent = match.available ? 'Add to basket' : 'Sold out';
         }
         $$('input[type=radio]:checked', this).forEach(r => {
           const label = r.closest('.swatch-picker')?.querySelector('[data-selected]');
