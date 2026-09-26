@@ -1,0 +1,4 @@
+<section class="benefits-strip" aria-label="Why shop with us"><div class="container benefits-strip__inner">{% for block in section.blocks %}<div class="benefits-strip__item" {{ block.shopify_attributes }}><span class="benefits-strip__icon" aria-hidden="true">{% case forloop.index %}{% when 1 %}✳{% when 2 %}◇{% when 3 %}▣{% else %}◌{% endcase %}</span><span><strong>{{ block.settings.title }}</strong><small>{{ block.settings.description }}</small></span></div>{% endfor %}</div></section>
+{% schema %}
+{"name":"Benefits strip","settings":[],"blocks":[{"type":"benefit","name":"Benefit","settings":[{"type":"text","id":"title","label":"Title","default":"Made for your home"},{"type":"text","id":"description","label":"Description","default":"Sofas to settle into"}]}],"max_blocks":4,"presets":[{"name":"Benefits strip","blocks":[{"type":"benefit"},{"type":"benefit"},{"type":"benefit"},{"type":"benefit"}]}]}
+{% endschema %}

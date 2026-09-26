@@ -8,6 +8,14 @@
     {%- endif -%}
   </header>
 
+  <nav class="collection__categories" aria-label="Browse sofa categories">
+    {% if section.settings.category_menu != blank %}
+      {% for link in section.settings.category_menu.links %}<a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}
+    {% else %}
+      {% for col in collections limit: 9 %}{% if col.handle != 'all' %}<a href="{{ col.url }}"{% if col.handle == collection.handle %} aria-current="page"{% endif %}>{{ col.title }}</a>{% endif %}{% endfor %}
+    {% endif %}
+  </nav>
+
   <div class="collection__toolbar">
     <div class="collection__count">{{ collection.products_count }} {% if collection.products_count == 1 %}product{% else %}products{% endif %}</div>
     <form class="collection__sort">
@@ -23,8 +31,9 @@
     </form>
   </div>
 
+  <div class="collection__layout">
   {% if collection.filters.size > 0 %}
-    <form class="collection__filters" method="get" action="{{ collection.url }}">
+    <form class="collection__filters" method="get" action="{{ collection.url }}"><h2>Filters</h2>
       {% for filter in collection.filters %}
         <details class="collection__filter">
           <summary>{{ filter.label }}{% if filter.active_values.size > 0 %} <span>({{ filter.active_values.size }})</span>{% endif %}</summary>
@@ -47,6 +56,7 @@
     </form>
   {% endif %}
 
+  <div class="collection__list">
   {% paginate collection.products by section.settings.products_per_page %}
   {%- if collection.products.size > 0 -%}
     <div class="grid grid--4">
@@ -66,12 +76,14 @@
     <p class="text-center" style="padding:4rem 0">{{ 'collections.general.no_matches' | t }}</p>
   {%- endif -%}
   {% endpaginate %}
+  </div></div>
 </div>
 
 {% schema %}
 {
   "name": "Collection page",
   "settings": [
+    { "type": "link_list", "id": "category_menu", "label": "Category links" },
     { "type": "range", "id": "products_per_page", "min": 8, "max": 48, "step": 4, "default": 24, "label": "Products per page" }
   ]
 }
