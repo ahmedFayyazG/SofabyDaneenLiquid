@@ -1,74 +1,41 @@
-# Sofas By Daneen — Shopify Theme
+# Sofas by Daneen — Shopify Liquid theme
 
-Modern Online Store 2.0 Liquid theme built for **speed, SEO and conversion**.
+A Shopify Online Store 2.0 theme with a storefront layout modelled on M&H Living. Product images, names, prices, variants, and collection membership come from Sofas by Daneen in Shopify.
 
-## Tech stack
-
-- **Online Store 2.0** — JSON templates, section groups, app blocks
-- **Vanilla JS + Web Components** — no jQuery, no framework, ~15 KB total JS
-- **Native lazy loading** — `loading="lazy"` + Intersection Observer for below-fold sections
-- **Responsive images** — Shopify `image_url` filter with `srcset` and `sizes`
-- **Critical CSS inline** — above-the-fold styles inline, rest deferred
-- **Fabric + Colour picture swatches** — dependent options driven by metaobjects
-- **JSON-LD structured data** — Product, Collection, BreadcrumbList, Organization, WebSite, FAQPage
-- **Section rendering API** — instant cart/quickview updates without page reload
-
-## SEO features
-
-- Full Open Graph + Twitter Card tags
-- Canonical URLs on every page
-- Auto `hreflang` for markets
-- Breadcrumbs with schema
-- Product schema with price, availability, brand, GTIN, reviews
-- FAQ schema on product & collection pages
-- Sitemap-ready (Shopify auto-generates)
-- Preload hints for critical fonts and hero image
-- HTTP/2 push for critical assets
-- Core Web Vitals optimised (LCP <2.5s, CLS <0.1, INP <200ms)
-
-## Local development
+## Pull into an existing local clone
 
 ```bash
-# One-time: install Shopify CLI
-npm install -g @shopify/cli @shopify/theme
+cd /path/to/SofabyDaneenLiquid
+git switch main
+git pull --ff-only origin main
+```
 
-# Clone this repo
+If you have uncommitted changes, commit or stash them before pulling. If this is your first time downloading the repository:
+
+```bash
 git clone https://github.com/ahmedFayyazG/SofabyDaneenLiquid.git
 cd SofabyDaneenLiquid
+```
 
-# Live-edit against your store (auto-refresh browser on save)
-shopify theme dev --store=sofasbydaneen
+## Run a local Shopify preview
 
-# Push to store as an unpublished theme
-shopify theme push --unpublished --json
+Install the current Shopify CLI once:
 
-# Pull latest from store into local
-shopify theme pull
+```bash
+npm install -g @shopify/cli
+```
 
-# Check for errors
+From the theme root, run:
+
+```bash
 shopify theme check
+shopify theme dev --store s0unwg-ke.myshopify.com
 ```
 
-## Structure
+Sign in with a Shopify account that has access to Sofas by Daneen if prompted. Open the local URL printed by `theme dev` (usually http://127.0.0.1:9292). The command creates a development theme for preview and hot reload; it does not publish the theme. Stop it with Ctrl+C.
 
-```
-assets/         → CSS, JS, images
-config/         → settings_schema.json, settings_data.json
-layout/         → theme.liquid, checkout.liquid
-locales/        → en.default.json + translations
-sections/       → All sections (header, footer, product, collection, etc.)
-snippets/       → Reusable Liquid fragments
-templates/      → JSON templates for each page type
-blocks/         → Reusable content blocks
-```
+## Homepage setup
 
-## Key files
+The homepage is configured with real Sofas by Daneen collections: Corner Sofas, Chaise Sofas, Chesterfield Sofas, Large U Shaped Sofas and Curved Sofas. The featured products come from All Sofas. Add collection images and choose any replacement hero video or image in Shopify's theme editor to make the media your own. The default hero video and editorial fallback photos are hosted by the visual reference site and should be replaced before publishing.
 
-- `layout/theme.liquid` — global wrapper with meta, schema, preloads
-- `sections/main-product.liquid` — product page with fabric/colour swatches
-- `sections/main-collection.liquid` — collection with filters
-- `snippets/product-card.liquid` — reusable product tile
-- `snippets/swatch-picker.liquid` — dependent fabric/colour picker
-- `snippets/schema-product.liquid` — JSON-LD product schema
-- `assets/theme.css` — design tokens + component styles
-- `assets/theme.js` — Web Components (cart, swatches, quick add)
+Theme sections live in `sections/`, page order in `templates/*.json`, and shared styling and interactions in `assets/theme.css` and `assets/theme.js`.

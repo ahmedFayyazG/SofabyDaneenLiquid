@@ -144,7 +144,7 @@
         const submit = this.form?.querySelector('[type="submit"]');
         if (submit) {
           submit.disabled = !match.available;
-          submit.innerHTML = match.available ? `Add to basket — <span class="money">${money(match.price)}</span>` : 'Sold out';
+          submit.textContent = match.available ? 'Add to cart' : 'Sold out';
         }
         $$('input[type=radio]:checked', this).forEach(r => {
           const label = r.closest('.swatch-picker')?.querySelector('[data-selected]');
@@ -186,6 +186,8 @@
     connectedCallback() {
       this.main = $('.gallery__main img', this);
       $$('.gallery__thumb', this).forEach(t => on(t, 'click', () => this.select(t)));
+      on(this.querySelector('[data-gallery-prev]'), 'click', () => this.step(-1));
+      on(this.querySelector('[data-gallery-next]'), 'click', () => this.step(1));
       on(document, 'variant:change', (e) => {
         if (e.detail.featured_image) this.setImage(e.detail.featured_image.src);
       });
@@ -195,9 +197,70 @@
       thumb.setAttribute('aria-current', 'true');
       this.setImage(thumb.dataset.src);
     }
+    step(direction) {
+      const thumbs = $$('.gallery__thumb', this);
+      const index = thumbs.findIndex(t => t.getAttribute('aria-current') === 'true');
+      if (thumbs.length) this.select(thumbs[(index + direction + thumbs.length) % thumbs.length]);
+    }
     setImage(src) { if (this.main) this.main.src = src; }
   }
   customElements.define('product-gallery', ProductGallery);
+
+  const siteHeader = document.querySelector('.header');
+  const updateHeader = () => siteHeader?.classList.toggle('header--scrolled', window.scrollY > 60);
+  on(window, 'scroll', updateHeader, { passive: true });
+  updateHeader();
+
+  $$('[data-size-more]').forEach(button => on(button, 'click', () => {
+    const expanded = button.closest('.size-section').querySelector('[data-size-grid]').classList.toggle('is-expanded');
+    button.setAttribute('aria-expanded', String(expanded));
+    button.textContent = expanded ? 'View fewer sizes' : 'View more sizes';
+  }));
+
+  // ---------- Storefront search and favourites ----------
+  const searchPanel = document.querySelector('[data-search-panel]');
+  on(document.querySelector('[data-search-toggle]'), 'click', () => {
+    searchPanel.hidden = !searchPanel.hidden;
+    if (!searchPanel.hidden) searchPanel.querySelector('input')?.focus();
+  });
+  on(document.querySelector('[data-search-close]'), 'click', () => { searchPanel.hidden = true; });
+  const wishlistPanel = document.querySelector('[data-wishlist-panel]');
+  const getWishlist = () => { try { return JSON.parse(localStorage.getItem('sofas-wishlist') || '[]'); } catch { return []; } };
+  const saveWishlist = (list) => localStorage.setItem('sofas-wishlist', JSON.stringify(list));
+  const renderWishlist = () => {
+    const list = getWishlist();
+    const target = document.querySelector('[data-wishlist-items]');
+    if (!target) return;
+    target.replaceChildren();
+    if (!list.length) { const p = document.createElement('p'); p.textContent = 'No favourites yet.'; target.append(p); }
+    list.forEach(item => {
+      const row = document.createElement('div'); row.className = 'wishlist-panel__item';
+      const img = document.createElement('img'); img.src = item.image; img.alt = '';
+      const box = document.createElement('div');
+      const link = document.createElement('a'); link.href = item.url; const title = document.createElement('strong'); title.textContent = item.title; link.append(title);
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
+      on(remove, 'click', () => { saveWishlist(getWishlist().filter(p => p.id !== item.id)); renderWishlist(); updateHearts(); });
+      box.append(link, document.createElement('br'), remove); row.append(img, box); target.append(row);
+    });
+  };
+  const updateHearts = () => {
+    const ids = getWishlist().map(item => item.id);
+    $$('[data-wishlist-add]').forEach(button => {
+      const saved = ids.includes(button.dataset.id);
+      button.setAttribute('aria-pressed', String(saved));
+      button.textContent = saved ? '♥' : '♡';
+      button.setAttribute('aria-label', (saved ? 'Remove ' : 'Add ') + button.dataset.title + (saved ? ' from' : ' to') + ' wishlist');
+    });
+  };
+  $$('[data-wishlist-add]').forEach(button => on(button, 'click', () => {
+    const item = { id: button.dataset.id, title: button.dataset.title, url: button.dataset.url, image: button.dataset.image };
+    const existing = getWishlist();
+    saveWishlist(existing.some(p => p.id === item.id) ? existing.filter(p => p.id !== item.id) : [...existing, item]);
+    updateHearts(); renderWishlist();
+  }));
+  on(document.querySelector('[data-wishlist-toggle]'), 'click', () => { wishlistPanel.hidden = false; renderWishlist(); });
+  on(document.querySelector('[data-wishlist-close]'), 'click', () => { wishlistPanel.hidden = true; });
+  updateHearts();
 
   // ---------- Accessible mobile navigation ----------
   const menuToggle = document.querySelector('[data-menu-toggle]');

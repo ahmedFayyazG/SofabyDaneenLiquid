@@ -1,68 +1,9 @@
-<footer class="footer">
-  <div class="container">
-    <div class="footer__grid">
-      {%- for block in section.blocks -%}
-        <div {{ block.shopify_attributes }}>
-          <h4 class="footer__title">{{ block.settings.heading }}</h4>
-          {%- case block.type -%}
-            {%- when 'menu' -%}
-              <ul class="footer__nav">
-                {%- for link in block.settings.menu.links -%}
-                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-                {%- endfor -%}
-              </ul>
-            {%- when 'text' -%}
-              <div>{{ block.settings.content }}</div>
-          {%- endcase -%}
-        </div>
-      {%- endfor -%}
-
-      <div>
-        <h4 class="footer__title">Newsletter</h4>
-        <p style="opacity:.8">Get 10% off your first order.</p>
-        {% form 'customer', class: 'newsletter' %}
-          <input type="hidden" name="contact[tags]" value="newsletter">
-          <div style="display:flex;gap:.5rem">
-            <input type="email" name="contact[email]" placeholder="you@example.com" required style="flex:1;padding:.75em;border-radius:var(--radius);border:0;color:#000">
-            <button type="submit" class="btn btn--secondary" style="color:#fff;border-color:#fff">Join</button>
-          </div>
-        {% endform %}
-      </div>
-    </div>
-
-    <div class="footer__bottom">
-      <div>© {{ 'now' | date: '%Y' }} {{ shop.name }} — All rights reserved.</div>
-      <div>
-        {%- for link in section.settings.legal_menu.links -%}
-          <a href="{{ link.url }}" style="margin-left:1rem">{{ link.title }}</a>
-        {%- endfor -%}
-      </div>
-    </div>
-  </div>
-</footer>
-
+<footer class="footer"><div class="container"><div class="footer__grid"><div class="footer__brand"><a class="footer__brandmark" href="{{ routes.root_url }}">{% if settings.logo %}{{ settings.logo | image_url: width: 260 | image_tag: alt: shop.name, loading: 'lazy' }}{% else %}Sofas <em>by</em><br>Daneen{% endif %}</a><p>{{ section.settings.tagline }}</p><div class="footer__social">{% if settings.social_instagram_link != blank %}<a href="{{ settings.social_instagram_link }}" aria-label="Instagram">◎</a>{% endif %}{% if settings.social_facebook_link != blank %}<a href="{{ settings.social_facebook_link }}" aria-label="Facebook">f</a>{% endif %}{% if settings.social_youtube_link != blank %}<a href="{{ settings.social_youtube_link }}" aria-label="YouTube">▷</a>{% endif %}{% if settings.social_tiktok_link != blank %}<a href="{{ settings.social_tiktok_link }}" aria-label="TikTok">♪</a>{% endif %}</div></div>
+  {% for block in section.blocks %}<div {{ block.shopify_attributes }}><h2 class="footer__title">{{ block.settings.heading }}</h2>{% case block.type %}{% when 'menu' %}<ul class="footer__nav">{% for link in block.settings.menu.links %}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{% endfor %}</ul>{% when 'text' %}<div class="footer__text">{{ block.settings.content }}</div>{% endcase %}</div>{% endfor %}
+  <div><h2 class="footer__title">Contact us</h2><div class="footer__text">{% if section.settings.contact_text != blank %}<p>{{ section.settings.contact_text }}</p>{% endif %}{% if settings.contact_phone != blank %}<p><a href="tel:{{ settings.contact_phone | remove: ' ' | escape }}">{{ settings.contact_phone }}</a></p>{% endif %}{% if settings.contact_email != blank %}<p><a href="mailto:{{ settings.contact_email | escape }}">{{ settings.contact_email }}</a></p>{% endif %}</div></div></div>
+  {% if shop.enabled_payment_types.size > 0 %}<div class="footer__payments" aria-label="Accepted payment methods">{% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag: class: 'payment-icon' }}{% endfor %}</div>{% endif %}
+  <div class="footer__bottom"><span>© {{ 'now' | date: '%Y' }} {{ shop.name }} — All rights reserved.</span><div>{% for link in section.settings.legal_menu.links %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}</div></div>
+</div></footer>
 {% schema %}
-{
-  "name": "Footer",
-  "settings": [
-    { "type": "link_list", "id": "legal_menu", "label": "Legal menu", "default": "footer" }
-  ],
-  "blocks": [
-    { "type": "menu", "name": "Menu", "settings": [
-      { "type": "text", "id": "heading", "label": "Heading", "default": "Shop" },
-      { "type": "link_list", "id": "menu", "label": "Menu" }
-    ]},
-    { "type": "text", "name": "Text", "settings": [
-      { "type": "text", "id": "heading", "label": "Heading", "default": "About" },
-      { "type": "richtext", "id": "content", "label": "Content" }
-    ]}
-  ],
-  "default": {
-    "blocks": [
-      { "type": "menu", "settings": { "heading": "Shop" }},
-      { "type": "menu", "settings": { "heading": "Help" }},
-      { "type": "text", "settings": { "heading": "About", "content": "<p>Handmade sofas, built in the UK.</p>" }}
-    ]
-  }
-}
+{"name":"Footer","settings":[{"type":"textarea","id":"tagline","label":"Brand description","default":"Sofas made for comfort, character and everyday life."},{"type":"textarea","id":"contact_text","label":"Contact text"},{"type":"link_list","id":"legal_menu","label":"Legal menu","default":"footer"}],"blocks":[{"type":"menu","name":"Menu","settings":[{"type":"text","id":"heading","label":"Heading","default":"Shop"},{"type":"link_list","id":"menu","label":"Menu"}]},{"type":"text","name":"Text","settings":[{"type":"text","id":"heading","label":"Heading","default":"About"},{"type":"richtext","id":"content","label":"Content"}]}],"max_blocks":4,"default":{"blocks":[{"type":"menu","settings":{"heading":"Type"}},{"type":"menu","settings":{"heading":"Collections"}},{"type":"menu","settings":{"heading":"Company"}}]}}
 {% endschema %}

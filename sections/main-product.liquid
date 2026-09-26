@@ -1,124 +1,38 @@
-<div class="container">
+<div class="container pdp-shell">
   {% render 'breadcrumbs' %}
-
-  <div class="product">
-    <product-gallery class="product__gallery">
-      <div class="gallery">
-        <div class="gallery__main">
-          {%- if product.featured_image -%}
-            <img
-              src="{{ product.featured_image | image_url: width: 1200 }}"
-              srcset="{{ product.featured_image | image_url: width: 600 }} 600w, {{ product.featured_image | image_url: width: 1200 }} 1200w, {{ product.featured_image | image_url: width: 1800 }} 1800w"
-              sizes="(min-width: 900px) 50vw, 100vw"
-              alt="{{ product.featured_image.alt | default: product.title | escape }}"
-              width="1200"
-              height="{{ 1200 | divided_by: product.featured_image.aspect_ratio | round }}"
-              loading="eager"
-              fetchpriority="high">
-          {%- endif -%}
+  <div class="product product--reference">
+    <div class="product__visual-column">
+      <product-gallery class="product__gallery">
+        <div class="gallery">
+          <div class="gallery__main">
+            {% if product.featured_image %}{{ product.featured_image | image_url: width: 1600 | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 900px) 50vw, 100vw', widths: '600,900,1200,1600' }}{% endif %}
+            {% if product.images.size > 1 %}<button class="gallery__arrow gallery__arrow--prev" type="button" data-gallery-prev aria-label="Previous image">←</button><button class="gallery__arrow gallery__arrow--next" type="button" data-gallery-next aria-label="Next image">→</button>{% endif %}
+          </div>
+          {% if product.images.size > 1 %}<div class="gallery__thumbs">{% for img in product.images limit: 10 %}<button class="gallery__thumb" type="button" data-src="{{ img | image_url: width: 1600 }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="View image {{ forloop.index }}">{{ img | image_url: width: 170 | image_tag: alt: '', loading: 'lazy' }}</button>{% endfor %}</div>{% endif %}
         </div>
-        {%- if product.images.size > 1 -%}
-          <div class="gallery__thumbs">
-            {%- for img in product.images limit: 10 -%}
-              <button class="gallery__thumb" data-src="{{ img | image_url: width: 1200 }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="View image {{ forloop.index }}">
-                <img src="{{ img | image_url: width: 200 }}" alt="" width="200" height="200" loading="lazy">
-              </button>
-            {%- endfor -%}
-          </div>
-        {%- endif -%}
+      </product-gallery>
+      {% if section.settings.highlights != blank %}<div class="product__highlights"><p class="product__panel-label">♡ &nbsp; Why it's loved</p>{{ section.settings.highlights }}</div>{% endif %}
+      <div class="product__specifications"><p class="product__panel-label">♢ &nbsp; Specifications</p><details open><summary>Product description</summary><div class="product__description">{{ product.description }}</div></details>
+        {% if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm %}<details><summary>Dimensions</summary><dl>{% if product.metafields.custom.width_cm %}<div><dt>Width</dt><dd>{{ product.metafields.custom.width_cm }} cm</dd></div>{% endif %}{% if product.metafields.custom.depth_cm %}<div><dt>Depth</dt><dd>{{ product.metafields.custom.depth_cm }} cm</dd></div>{% endif %}{% if product.metafields.custom.height_cm %}<div><dt>Height</dt><dd>{{ product.metafields.custom.height_cm }} cm</dd></div>{% endif %}</dl></details>{% endif %}
       </div>
-    </product-gallery>
-
+    </div>
     <div class="product__details">
+      <p class="product__eyebrow">{{ section.settings.eyebrow }}</p>
       <h1 class="product__title">{{ product.title }}</h1>
-
-      <p class="product__trust">Made to order · Designed for everyday living</p>
-      <div class="product__price money" data-price>
-        {%- if product.compare_at_price > product.price -%}
-          {{ product.price | money }}
-          <s>{{ product.compare_at_price | money }}</s>
-        {%- else -%}
-          {{ product.price | money }}
-        {%- endif -%}
-      </div>
-
-      <product-form>
-        <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
-          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-
-          {%- if product.has_only_default_variant == false -%}
-            <swatch-picker data-variants="{{ product.variants | json | escape }}">
-              {%- for opt in product.options_with_values -%}
-                <div class="swatch-picker">
-                  <label class="swatch-picker__label">{{ opt.name }}: <span data-selected>{{ opt.selected_value }}</span></label>
-                  <div class="swatch-picker__options">
-                    {%- for val in opt.values -%}
-                      {%- assign val_handle = val | handle -%}
-                      {%- assign swatch = null -%}
-                      {%- if opt.name contains 'Colour' or opt.name contains 'Color' -%}
-                        {%- assign swatch = val.swatch -%}
-                      {%- endif -%}
-                      <label class="swatch-picker__option">
-                        <input class="swatch-picker__input visually-hidden" type="radio" name="options[{{ opt.name | escape }}]" value="{{ val | escape }}"{% if opt.selected_value == val %} checked{% endif %}>
-                        {%- if swatch and swatch.image -%}
-                          <span class="swatch-picker__chip" style="background-image:url('{{ swatch.image | image_url: width: 60 }}')" title="{{ val }}"></span>
-                        {%- elsif swatch and swatch.color -%}
-                          <span class="swatch-picker__chip" style="background-color:{{ swatch.color }}" title="{{ val }}"></span>
-                        {%- else -%}
-                          <span class="swatch-picker__chip swatch-picker__chip--text">{{ val }}</span>
-                        {%- endif -%}
-                      </label>
-                    {%- endfor -%}
-                  </div>
-                </div>
-              {%- endfor -%}
-            </swatch-picker>
-          {%- endif -%}
-
-          <div class="flex" style="gap:.75rem;margin:1.5rem 0">
-            <label class="visually-hidden" for="Quantity">Quantity</label>
-            <input id="Quantity" name="quantity" type="number" value="1" min="1" style="width:80px;padding:.75em;border:1px solid var(--c-border);border-radius:var(--radius);text-align:center">
-            <button type="submit" class="btn btn--primary btn--lg" style="flex:1">
-              {%- if product.available -%}
-                {{ 'products.product.add_to_cart' | t }} — <span class="money">{{ product.selected_or_first_available_variant.price | money }}</span>
-              {%- else -%}
-                {{ 'products.product.sold_out' | t }}
-              {%- endif -%}
-            </button>
-          </div>
-        </form>
-      </product-form>
-
-      <div class="product__description">
-        {{ product.description }}
-      </div>
-
-      {%- if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm -%}
-        <details open>
-          <summary style="cursor:pointer;font-weight:600;padding:.5rem 0">Dimensions</summary>
-          <table style="width:100%;border-collapse:collapse;margin-top:.5rem">
-            {%- if product.metafields.custom.width_cm -%}<tr><td style="padding:.4rem 0">Width</td><td style="text-align:right">{{ product.metafields.custom.width_cm }} cm</td></tr>{%- endif -%}
-            {%- if product.metafields.custom.depth_cm -%}<tr><td>Depth</td><td style="text-align:right">{{ product.metafields.custom.depth_cm }} cm</td></tr>{%- endif -%}
-            {%- if product.metafields.custom.height_cm -%}<tr><td>Height</td><td style="text-align:right">{{ product.metafields.custom.height_cm }} cm</td></tr>{%- endif -%}
-            {%- if product.metafields.custom.seat_depth_cm -%}<tr><td>Seat depth</td><td style="text-align:right">{{ product.metafields.custom.seat_depth_cm }} cm</td></tr>{%- endif -%}
-            {%- if product.metafields.custom.seats -%}<tr><td>Seats</td><td style="text-align:right">{{ product.metafields.custom.seats }}</td></tr>{%- endif -%}
-          </table>
-        </details>
-      {%- endif -%}
-
-      <div class="product__benefits" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--c-border);font-size:.9rem;color:var(--c-muted)">
-        <div>✓ Free UK mainland delivery</div>
-        <div>✓ Made in the United Kingdom</div>
-        <div>✓ 2-year frame warranty</div>
-        <div>SKU: {{ product.selected_or_first_available_variant.sku }}</div>
-      </div>
+      {% if product.metafields.reviews.rating.value %}<div class="product__rating"><span aria-hidden="true">★★★★★</span> {{ product.metafields.reviews.rating.value.rating }}{% if product.metafields.reviews.rating_count %} · {{ product.metafields.reviews.rating_count }} reviews{% endif %}</div>{% endif %}
+      {% if section.settings.assurance != blank %}<div class="product__assurance">{{ section.settings.assurance }}</div>{% endif %}
+      <div class="product__price money" data-price>{{ product.selected_or_first_available_variant.price | money }}{% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}<s>{{ product.selected_or_first_available_variant.compare_at_price | money }}</s>{% endif %}</div>
+      {% if section.settings.finance != blank %}<p class="product__finance">{{ section.settings.finance }}</p>{% endif %}
+      <div class="product__delivery"><span>♧ &nbsp; {{ section.settings.delivery_text }}</span>{% if section.settings.size_guide != blank %}<a href="{{ section.settings.size_guide }}">▤ &nbsp; Size guide</a>{% endif %}</div>
+      <product-form><form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data"><input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      {% unless product.has_only_default_variant %}<swatch-picker data-variants="{{ product.variants | json | escape }}">{% for opt in product.options_with_values %}{% assign option_name = opt.name | downcase %}<fieldset class="swatch-picker{% if option_name contains 'colour' or option_name contains 'color' or option_name contains 'fabric' or option_name contains 'material' %} swatch-picker--fabric{% endif %}"><legend class="swatch-picker__label">{% if option_name contains 'size' or option_name contains 'seater' %}Select sofa type{% else %}Select {{ opt.name }}{% endif %}<span data-selected>{{ opt.selected_value }}</span></legend><div class="swatch-picker__options">{% for val in opt.values %}<label class="swatch-picker__option"><input class="swatch-picker__input" type="radio" name="options[{{ opt.name | escape }}]" value="{{ val | escape }}"{% if opt.selected_value == val %} checked{% endif %}><span class="swatch-picker__chip swatch-picker__chip--text">{% if val.swatch.color %}<i style="background:{{ val.swatch.color }}"></i>{% elsif val.swatch.image %}<i style="background-image:url('{{ val.swatch.image | image_url: width: 60 }}')"></i>{% endif %}{{ val }}</span></label>{% endfor %}</div></fieldset>{% endfor %}</swatch-picker>{% endunless %}
+      {% if section.settings.swatch_url != blank %}<a class="product__swatch-link" href="{{ section.settings.swatch_url }}">Not sure about the colour? <strong>Order fabric samples →</strong></a>{% endif %}
+      <div class="product__buy-row"><label class="visually-hidden" for="Quantity-{{ section.id }}">Quantity</label><input id="Quantity-{{ section.id }}" name="quantity" type="number" value="1" min="1"><button type="submit" class="btn btn--primary"{% unless product.available %} disabled{% endunless %}>{% if product.available %}Add to cart{% else %}Sold out{% endif %}</button></div>
+      </form></product-form>
+      <div class="product__benefits"><div>{{ section.settings.benefit_one }}</div><div>{{ section.settings.benefit_two }}</div><div>{{ section.settings.benefit_three }}</div><div>{{ section.settings.benefit_four }}</div></div>
     </div>
   </div>
 </div>
-
 {% schema %}
-{
-  "name": "Product page",
-  "settings": []
-}
+{"name":"Product page","settings":[{"type":"text","id":"eyebrow","label":"Eyebrow","default":"Made to order · Sofas by Daneen"},{"type":"richtext","id":"highlights","label":"Why it's loved","default":"<ul><li>Made for everyday comfort</li><li>Thoughtful details</li><li>Choose your own finish</li></ul>"},{"type":"richtext","id":"assurance","label":"Assurance text"},{"type":"text","id":"finance","label":"Finance message"},{"type":"text","id":"delivery_text","label":"Delivery message","default":"Delivery details at checkout"},{"type":"url","id":"size_guide","label":"Size guide link"},{"type":"url","id":"swatch_url","label":"Fabric samples link"},{"type":"text","id":"benefit_one","label":"Benefit one","default":"Find the right size"},{"type":"text","id":"benefit_two","label":"Benefit two","default":"Choose your fabric"},{"type":"text","id":"benefit_three","label":"Benefit three","default":"Made for your home"},{"type":"text","id":"benefit_four","label":"Benefit four","default":"Here to help"}]}
 {% endschema %}

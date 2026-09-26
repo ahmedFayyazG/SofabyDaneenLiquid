@@ -3,10 +3,10 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "heading": "Sofas made for the way you live.",
+        "heading": "British-made sofas, beautifully lived in.",
         "button_text": "Discover the collection",
-        "button_url": "shopify://collections/all",
-        "height": 800,
+        "button_url": "shopify://collections/all-sofas",
+        "height": 900,
         "overlay": 30
       }
     },
@@ -15,51 +15,112 @@
       "settings": {
         "eyebrow": "Shop by collection",
         "heading": "Find the right piece for the way you live.",
-        "description": "Discover sofas that bring comfort, character and a little more joy into your home."
-      }
+        "description": "Start with the sofa range that suits your room and style. Explore the sizes, configurations and upholstery choices available."
+      },
+      "blocks": {
+        "col1": {
+          "type": "collection",
+          "settings": {
+            "collection": "corner-sofas"
+          }
+        },
+        "col2": {
+          "type": "collection",
+          "settings": {
+            "collection": "chaise-sofas"
+          }
+        },
+        "col3": {
+          "type": "collection",
+          "settings": {
+            "collection": "chesterfield-sofas"
+          }
+        },
+        "col4": {
+          "type": "collection",
+          "settings": {
+            "collection": "large-u-shaped-sofas"
+          }
+        },
+        "col5": {
+          "type": "collection",
+          "settings": {
+            "collection": "curved-sofas"
+          }
+        }
+      },
+      "block_order": [
+        "col1",
+        "col2",
+        "col3",
+        "col4",
+        "col5"
+      ]
     },
     "sizes": {
       "type": "shop-by-size",
       "settings": {
         "eyebrow": "Shop by size",
         "heading": "Find the right fit for your room.",
-        "description": "However you make yourself at home, there is a sofa to fit."
+        "description": "Start with the seating and floor space you need, then check the published measurements on the exact sofa."
       },
       "blocks": {
+        "one": {
+          "type": "size",
+          "settings": {
+            "title": "1 Seater",
+            "description": "Compact comfort for snug corners.",
+            "link": "shopify://collections/all-sofas"
+          }
+        },
         "two": {
           "type": "size",
           "settings": {
             "title": "2 Seater",
-            "description": "Room for two."
+            "description": "Perfect for couples and small rooms.",
+            "link": "shopify://collections/all-sofas"
           }
         },
         "three": {
           "type": "size",
           "settings": {
             "title": "3 Seater",
-            "description": "The everyday favourite."
+            "description": "Our most-loved everyday size.",
+            "link": "shopify://collections/all-sofas"
           }
         },
         "four": {
           "type": "size",
           "settings": {
             "title": "4 Seater",
-            "description": "Extra room to unwind."
+            "description": "Extra room for the whole family.",
+            "link": "shopify://collections/all-sofas"
           }
         },
         "corner": {
           "type": "size",
           "settings": {
             "title": "Corner Sofa",
-            "description": "Made for gathering."
+            "description": "Generous seating for everyone.",
+            "link": "shopify://collections/corner-sofas"
+          }
+        },
+        "u": {
+          "type": "size",
+          "settings": {
+            "title": "U Shape",
+            "description": "Make room for conversation.",
+            "link": "shopify://collections/large-u-shaped-sofas"
           }
         }
       },
       "block_order": [
+        "one",
         "two",
         "three",
         "four",
-        "corner"
+        "corner",
+        "u"
       ]
     },
     "featured": {
@@ -67,18 +128,20 @@
       "settings": {
         "eyebrow": "The collection",
         "heading": "Our bestselling sofas.",
-        "subheading": "Find your new favourite place to sit.",
-        "limit": 4
+        "subheading": "A quick route into the sofas customers choose most often. Compare the style and options on each product page.",
+        "limit": 4,
+        "collection": "all-sofas"
       }
     },
     "story": {
       "type": "editorial-story",
       "settings": {
-        "eyebrow": "The Daneen story",
-        "heading": "A home is made for living in.",
-        "text": "<p>Beautiful sofas, thoughtful details and lasting comfort. Find the piece that feels like yours.</p>",
+        "eyebrow": "British sofa maker",
+        "heading": "Made in Britain, crafted for your home.",
+        "text": "<p>Explore thoughtfully made sofas and the details that make each piece feel at home in your space.</p>",
         "button_text": "Shop our sofas",
-        "button_url": "shopify://collections/all"
+        "button_url": "shopify://collections/all",
+        "fallback_image": "https://mandhliving.co.uk/cdn/shop/files/cinema-sofa-D3_JVl0.png?v=1781890679&width=1600"
       }
     },
     "faq": {
@@ -142,6 +205,75 @@
         "three",
         "four"
       ]
+    },
+    "story_two": {
+      "type": "editorial-story",
+      "settings": {
+        "media_right": true,
+        "eyebrow": "Made to order",
+        "heading": "A sofa that feels right for your space.",
+        "text": "<p>Choose the size, fabric and finish on each product page. Compare measurements to find the right fit before ordering.</p>",
+        "button_text": "Shop sofas",
+        "button_url": "shopify://collections/all",
+        "fallback_image": "https://mandhliving.co.uk/cdn/shop/files/cinema-sofa-D3_JVl0.png?v=1781890679&width=1600"
+      }
+    },
+    "gallery": {
+      "type": "home-gallery",
+      "settings": {
+        "eyebrow": "In real homes",
+        "heading": "In our customers' homes.",
+        "link_text": "Follow on Instagram"
+      }
+    },
+    "bespoke": {
+      "type": "bespoke-guide",
+      "settings": {
+        "eyebrow": "Bespoke requests",
+        "heading": "Standard sizes don't fit?",
+        "heading_emphasis": "Talk to us before you order.",
+        "description": "<p>If you need something outside the standard specification, speak to our team before placing an order.</p>",
+        "button_text": "Talk to a sofa expert",
+        "fallback_image": "https://mandhliving.co.uk/cdn/shop/files/mh-showroom.jpg?v=1777315673&width=1800"
+      },
+      "blocks": {
+        "step1": {
+          "type": "step",
+          "settings": {
+            "title": "Share your requirements",
+            "text": "Tell us the sofa and measurements you have in mind."
+          }
+        },
+        "step2": {
+          "type": "step",
+          "settings": {
+            "title": "Check the options",
+            "text": "We can discuss the available choices for your space."
+          }
+        },
+        "step3": {
+          "type": "step",
+          "settings": {
+            "title": "Choose with confidence",
+            "text": "Confirm the specification before you order."
+          }
+        }
+      },
+      "block_order": [
+        "step1",
+        "step2",
+        "step3"
+      ]
+    },
+    "fabric_story": {
+      "type": "editorial-story",
+      "settings": {
+        "eyebrow": "Fabric samples",
+        "heading": "See the fabric in your own room.",
+        "text": "<p>Compare colours and textures in your own light before choosing the finish for your sofa.</p>",
+        "button_text": "Explore fabrics",
+        "fallback_image": "https://mandhliving.co.uk/cdn/shop/files/fabric-colors-tWPvkZe0.jpg?v=1780306776&width=1600"
+      }
     }
   },
   "order": [
@@ -151,6 +283,10 @@
     "sizes",
     "featured",
     "story",
+    "story_two",
+    "gallery",
+    "bespoke",
+    "fabric_story",
     "faq"
   ]
 }
