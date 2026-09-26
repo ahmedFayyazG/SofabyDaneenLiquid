@@ -13,6 +13,9 @@
     const val = (cents / 100).toFixed(2);
     return `£${val.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   };
+  const escapeHTML = (value) => String(value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
   const announce = (msg) => {
     const region = $('#Announcements');
     if (region) { region.textContent = ''; setTimeout(() => region.textContent = msg, 50); }
@@ -76,6 +79,7 @@
           <div style="flex:1">
             <a href="${i.url}"><strong>${i.product_title}</strong></a>
             <div class="text-muted" style="font-size:.85rem">${i.variant_title || ''}</div>
+            ${Object.entries(i.properties || {}).filter(([name, value]) => value && !name.startsWith('_')).map(([name, value]) => `<div class="text-muted" style="font-size:.8rem">${escapeHTML(name)}: ${escapeHTML(value)}</div>`).join('')}
             <div class="money">${money(i.final_line_price)}</div>
             <div class="qty" style="margin-top:.5rem">
               <button data-qty="-1" aria-label="Decrease">−</button>
@@ -158,7 +162,12 @@
         try {
           const fd = new FormData(this.form);
           const id = fd.get('id'), qty = parseInt(fd.get('quantity') || '1', 10);
-          await Cart.add(id, qty);
+          const properties = Object.fromEntries(
+            [...fd.entries()]
+              .filter(([key, value]) => key.startsWith('properties[') && value)
+              .map(([key, value]) => [key.slice(11, -1), value])
+          );
+          await Cart.add(id, qty, properties);
           const cart = await Cart.get();
           document.dispatchEvent(new CustomEvent('cart:add', { detail: cart }));
           announce('Added to basket');
@@ -200,6 +209,29 @@
     setImage(src) { if (this.main) { this.main.removeAttribute('srcset'); this.main.src = src; } }
   }
   customElements.define('product-gallery', ProductGallery);
+
+  class FabricLibrary extends HTMLElement {
+    connectedCallback() {
+      const ranges = $('.fabric-library__ranges', this);
+      if (ranges) {
+        $$('.fabric-library__range', ranges)
+          .sort((a, b) => a.dataset.range.localeCompare(b.dataset.range, undefined, { sensitivity: 'base' }))
+          .forEach(range => {
+            const grid = $('.fabric-library__grid', range);
+            $$('.fabric-library__choice', grid)
+              .sort((a, b) => a.dataset.colour.localeCompare(b.dataset.colour, undefined, { sensitivity: 'base' }))
+              .forEach(choice => grid.append(choice));
+            ranges.append(range);
+          });
+      }
+      on(this, 'change', (event) => {
+        if (event.target.name !== 'properties[Requested fabric]') return;
+        const selected = $('[data-fabric-selected]', this);
+        if (selected) selected.textContent = event.target.value;
+      });
+    }
+  }
+  customElements.define('fabric-library', FabricLibrary);
 
   const siteHeader = document.querySelector('.header');
   const updateHeader = () => siteHeader?.classList.toggle('header--scrolled', window.scrollY > 60);

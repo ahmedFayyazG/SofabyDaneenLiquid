@@ -1,0 +1,44 @@
+{% doc %}
+Renders the store's fabric-range metaobjects as selectable, grouped swatches.
+The selected fabric is submitted with the product as a line item property.
+{% enddoc %}
+{% assign fabric_ranges = metaobjects.fabric_range.values %}
+{% if fabric_ranges != blank %}
+  {% assign total_swatches = 0 %}
+  {% for fabric_range in fabric_ranges %}
+    {% assign range_swatches = fabric_range.swatches.value %}
+    {% assign total_swatches = total_swatches | plus: range_swatches.count %}
+  {% endfor %}
+  <fabric-library class="fabric-library">
+    <div class="fabric-library__heading">
+      <h2>Choose a fabric and colour</h2>
+      <span>{{ total_swatches }} swatches</span>
+    </div>
+    <p class="fabric-library__help">Browse by fabric type. You can choose a swatch even if there is no matching sofa photo.</p>
+    <p class="fabric-library__selection" aria-live="polite">Selected: <strong data-fabric-selected>None yet</strong></p>
+    <div class="fabric-library__ranges">
+      {% for fabric_range in fabric_ranges %}
+        {% assign range_swatches = fabric_range.swatches.value %}
+        {% assign range_name = fabric_range.name.value %}
+        {% if range_swatches != blank %}
+          <details class="fabric-library__range" data-range="{{ range_name | escape }}" open>
+            <summary><span>{{ range_name | escape }}</span><small>{{ range_swatches.count }} colours</small></summary>
+            <div class="fabric-library__grid">
+              {% for swatch in range_swatches %}
+                {% assign colour_name = swatch.alt | split: '–' | last | strip %}
+                {% if colour_name == blank %}{% assign colour_name = 'Colour ' | append: forloop.index %}{% endif %}
+                <label class="fabric-library__choice" data-colour="{{ colour_name | escape }}">
+                  <input type="radio" name="properties[Requested fabric]" value="{{ range_name | escape }} / {{ colour_name | escape }}">
+                  <span class="fabric-library__tile">
+                    {{ swatch | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 90, alt: swatch.alt }}
+                    <span>{{ colour_name | escape }}</span>
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+          </details>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </fabric-library>
+{% endif %}

@@ -58,10 +58,11 @@
           <input type="hidden" name="id" value="{{ current_variant.id }}">
           {% if fabric_name != blank %}
             <div class="product__fabric">
-              <p class="product__option-title">Fabric <span>{{ fabric_name | escape }}</span></p>
+              <p class="product__option-title">Shown fabric <span>{{ fabric_name | escape }}</span></p>
               <div class="product__fabric-value"><span class="product__fabric-icon" aria-hidden="true"></span>{{ fabric_name | escape }}</div>
             </div>
           {% endif %}
+          {% render 'fabric-library' %}
           {% unless product.has_only_default_variant %}
             <swatch-picker data-variants="{{ product.variants | json | escape }}">
               {% for option in product.options_with_values %}
