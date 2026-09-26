@@ -114,34 +114,19 @@
   class SwatchPicker extends HTMLElement {
     connectedCallback() {
       this.form = this.closest('form[action*="/cart/add"]');
-      $$('input[name="options[Fabric]"]', this).forEach(r => on(r, 'change', () => this.filterColours(r.value)));
       $$('input[type=radio]', this).forEach(r => on(r, 'change', () => this.updateVariant()));
-      const checked = this.querySelector('input[name="options[Fabric]"]:checked');
-      if (checked) this.filterColours(checked.value);
-    }
-    filterColours(fabric) {
-      $$('input[name="options[Colour]"]', this).forEach(input => {
-        const opt = input.closest('.swatch-picker__option');
-        const supported = (input.dataset.fabrics || '').split('|');
-        const ok = !input.dataset.fabrics || supported.includes(fabric);
-        opt.style.display = ok ? '' : 'none';
-        if (!ok && input.checked) input.checked = false;
-      });
-      const firstVisible = $$('input[name="options[Colour]"]:not([style*="display: none"])', this)
-        .find(i => i.closest('.swatch-picker__option').style.display !== 'none');
-      if (firstVisible && !$('input[name="options[Colour]"]:checked', this)) firstVisible.checked = true;
       this.updateVariant();
     }
     updateVariant() {
       const selected = $$('input[type=radio]:checked', this).map(r => r.value);
       const data = JSON.parse(this.dataset.variants || '[]');
       const match = data.find(v => v.options.every((o, i) => o === selected[i]));
+      const submit = this.form?.querySelector('[type="submit"]');
       if (match) {
         const idInput = this.form?.querySelector('[name="id"]');
         if (idInput) idInput.value = match.id;
         const price = document.querySelector('[data-price]');
-        if (price) price.textContent = money(match.price);
-        const submit = this.form?.querySelector('[type="submit"]');
+        if (price) price.innerHTML = money(match.price) + (match.compare_at_price > match.price ? ` <s>${money(match.compare_at_price)}</s>` : '');
         if (submit) {
           submit.disabled = !match.available;
           submit.textContent = match.available ? 'Add to cart' : 'Sold out';
@@ -150,7 +135,13 @@
           const label = r.closest('.swatch-picker')?.querySelector('[data-selected]');
           if (label) label.textContent = r.value;
         });
+        const url = new URL(window.location.href);
+        url.searchParams.set('variant', match.id);
+        history.replaceState({}, '', url);
         document.dispatchEvent(new CustomEvent('variant:change', { detail: match }));
+      } else if (submit) {
+        submit.disabled = true;
+        submit.textContent = 'Unavailable';
       }
     }
   }
@@ -189,7 +180,11 @@
       on(this.querySelector('[data-gallery-prev]'), 'click', () => this.step(-1));
       on(this.querySelector('[data-gallery-next]'), 'click', () => this.step(1));
       on(document, 'variant:change', (e) => {
-        if (e.detail.featured_image) this.setImage(e.detail.featured_image.src);
+        if (e.detail.featured_image) {
+          const thumb = $$('.gallery__thumb', this).find(t => new URL(t.dataset.src, location.href).pathname === new URL(e.detail.featured_image.src, location.href).pathname);
+          if (thumb) this.select(thumb);
+          else this.setImage(e.detail.featured_image.src);
+        }
       });
     }
     select(thumb) {
@@ -202,7 +197,7 @@
       const index = thumbs.findIndex(t => t.getAttribute('aria-current') === 'true');
       if (thumbs.length) this.select(thumbs[(index + direction + thumbs.length) % thumbs.length]);
     }
-    setImage(src) { if (this.main) this.main.src = src; }
+    setImage(src) { if (this.main) { this.main.removeAttribute('srcset'); this.main.src = src; } }
   }
   customElements.define('product-gallery', ProductGallery);
 

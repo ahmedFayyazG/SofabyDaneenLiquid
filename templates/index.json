@@ -127,9 +127,9 @@
       "type": "featured-collection",
       "settings": {
         "eyebrow": "The collection",
-        "heading": "Our bestselling sofas.",
-        "subheading": "A quick route into the sofas customers choose most often. Compare the style and options on each product page.",
-        "limit": 4,
+        "heading": "Explore all our sofas.",
+        "subheading": "Browse every sofa currently available from Sofas by Daneen. Compare colours, sizes and prices on each product page.",
+        "limit": 12,
         "collection": "all-sofas"
       }
     },
