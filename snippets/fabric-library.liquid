@@ -16,7 +16,7 @@ The selected fabric is submitted with the product as a line item property.
     </div>
     <p class="fabric-library__help">Browse by fabric type. You can choose a swatch even if there is no matching sofa photo.</p>
     <p class="fabric-library__selection" aria-live="polite">Selected: <strong data-fabric-selected>None yet</strong></p>
-    <div class="fabric-library__ranges">
+    <div class="fabric-library__ranges fabric-library__ranges--collapsed">
       {% for fabric_range in fabric_ranges %}
         {% assign range_swatches = fabric_range.swatches.value %}
         {% assign range_name = fabric_range.name.value %}
@@ -40,5 +40,6 @@ The selected fabric is submitted with the product as a line item property.
         {% endif %}
       {% endfor %}
     </div>
+    <button class="fabric-library__toggle" type="button" data-fabric-toggle aria-expanded="false">Show more swatches</button>
   </fabric-library>
 {% endif %}

@@ -213,6 +213,7 @@
   class FabricLibrary extends HTMLElement {
     connectedCallback() {
       const ranges = $('.fabric-library__ranges', this);
+      const toggle = $('[data-fabric-toggle]', this);
       if (ranges) {
         $$('.fabric-library__range', ranges)
           .sort((a, b) => a.dataset.range.localeCompare(b.dataset.range, undefined, { sensitivity: 'base' }))
@@ -224,6 +225,12 @@
             ranges.append(range);
           });
       }
+      on(toggle, 'click', () => {
+        const expanded = ranges.classList.toggle('fabric-library__ranges--expanded');
+        ranges.classList.toggle('fabric-library__ranges--collapsed', !expanded);
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.textContent = expanded ? 'Show fewer swatches' : 'Show more swatches';
+      });
       on(this, 'change', (event) => {
         if (event.target.name !== 'properties[Requested fabric]') return;
         const selected = $('[data-fabric-selected]', this);

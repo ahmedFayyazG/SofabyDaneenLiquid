@@ -1,0 +1,12 @@
+<div class="container account-page">
+  {% render 'breadcrumbs' %}
+  <header class="account-page__header"><p class="eyebrow">Your account</p><h1>Orders</h1><p>View your sofa orders and the fabric choices saved with each order.</p></header>
+  {% if customer.orders.size > 0 %}
+    <div class="account-orders">{% paginate customer.orders by 20 %}{% for order in customer.orders %}
+      <article class="account-order"><header class="account-order__header"><div><span>Order</span><strong>{{ order.name }}</strong><time datetime="{{ order.created_at | date: '%Y-%m-%d' }}">{{ order.created_at | date: '%d %B %Y' }}</time></div><div><span>Payment</span><strong>{{ order.financial_status_label }}</strong><span>{{ order.fulfillment_status_label }}</span></div><div><span>Total</span><strong>{{ order.total_price | money }}</strong></div></header>
+      <div class="account-order__items">{% for item in order.line_items %}<div class="account-order__item">{% if item.image %}{{ item.image | image_url: width: 160 | image_tag: loading: 'lazy', alt: item.title }}{% endif %}<div><h2>{{ item.title }}</h2><p>Quantity: {{ item.quantity }}</p>{% for property in item.properties %}{% unless property.last == blank %}<p>{{ property.first }}: {{ property.last }}</p>{% endunless %}{% endfor %}</div><strong>{{ item.final_line_price | money }}</strong></div>{% endfor %}</div>
+      <a class="btn btn--secondary" href="{{ order.customer_url }}">View order details</a></article>
+    {% endfor %}{% if paginate.pages > 1 %}<nav class="pagination flex flex--between"><span>{{ paginate.current_page }} / {{ paginate.pages }}</span>{% if paginate.next %}<a class="btn btn--secondary" href="{{ paginate.next.url }}">Next orders →</a>{% endif %}</nav>{% endif %}{% endpaginate %}</div>
+  {% else %}<div class="account-empty"><h2>No orders yet</h2><p>Your completed orders will appear here.</p><a class="btn btn--primary" href="{{ routes.all_products_collection_url }}">Shop sofas</a></div>{% endif %}
+</div>
+{% schema %}{"name":"Customer orders","settings":[]}{% endschema %}
