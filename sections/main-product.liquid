@@ -32,6 +32,7 @@
     <div class="product__details">
       <h1 class="product__title">{{ product.title }}</h1>
 
+      <p class="product__trust">Made to order · Designed for everyday living</p>
       <div class="product__price money" data-price>
         {%- if product.compare_at_price > product.price -%}
           {{ product.price | money }}
@@ -105,7 +106,7 @@
         </details>
       {%- endif -%}
 
-      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--c-border);font-size:.9rem;color:var(--c-muted)">
+      <div class="product__benefits" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--c-border);font-size:.9rem;color:var(--c-muted)">
         <div>✓ Free UK mainland delivery</div>
         <div>✓ Made in the United Kingdom</div>
         <div>✓ 2-year frame warranty</div>

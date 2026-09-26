@@ -10,8 +10,7 @@
 
   <div class="collection__toolbar">
     <div class="collection__count">{{ collection.products_count }} {% if collection.products_count == 1 %}product{% else %}products{% endif %}</div>
-
-    <form>
+    <form class="collection__sort">
       <label class="visually-hidden" for="SortBy">{{ 'collections.general.sort_by' | t }}</label>
       <select id="SortBy" name="sort_by" onchange="this.form.submit()" style="padding:.5em;border-radius:var(--radius);border:1px solid var(--c-border)">
         {%- assign sort_options = 'manual|featured,best-selling|best_selling,title-ascending|az,title-descending|za,price-ascending|price_ascending,price-descending|price_descending,created-descending|date_descending' | split: ',' -%}
@@ -24,6 +23,31 @@
     </form>
   </div>
 
+  {% if collection.filters.size > 0 %}
+    <form class="collection__filters" method="get" action="{{ collection.url }}">
+      {% for filter in collection.filters %}
+        <details class="collection__filter">
+          <summary>{{ filter.label }}{% if filter.active_values.size > 0 %} <span>({{ filter.active_values.size }})</span>{% endif %}</summary>
+          <div class="collection__filter-panel">
+            {% case filter.type %}
+              {% when 'list' or 'boolean' %}
+                {% for value in filter.values %}
+                  <label><input type="checkbox" name="{{ value.param_name }}" value="{{ value.value | escape }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}> <span>{{ value.label }} ({{ value.count }})</span></label>
+                {% endfor %}
+              {% when 'price_range' %}
+                <label>From <input type="number" min="0" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" placeholder="0"></label>
+                <label>To <input type="number" min="0" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"></label>
+            {% endcase %}
+            <button class="btn btn--primary" type="submit">Apply</button>
+          </div>
+        </details>
+      {% endfor %}
+      <input type="hidden" name="sort_by" value="{{ collection.sort_by | default: collection.default_sort_by }}">
+      <a href="{{ collection.url }}">Clear filters</a>
+    </form>
+  {% endif %}
+
+  {% paginate collection.products by section.settings.products_per_page %}
   {%- if collection.products.size > 0 -%}
     <div class="grid grid--4">
       {%- for product in collection.products -%}
@@ -41,6 +65,7 @@
   {%- else -%}
     <p class="text-center" style="padding:4rem 0">{{ 'collections.general.no_matches' | t }}</p>
   {%- endif -%}
+  {% endpaginate %}
 </div>
 
 {% schema %}

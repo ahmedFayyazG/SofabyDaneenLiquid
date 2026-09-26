@@ -137,7 +137,19 @@
       const data = JSON.parse(this.dataset.variants || '[]');
       const match = data.find(v => v.options.every((o, i) => o === selected[i]));
       if (match) {
-        this.form?.querySelector('[name="id"]')?.setAttribute('value', match.id);
+        const idInput = this.form?.querySelector('[name="id"]');
+        if (idInput) idInput.value = match.id;
+        const price = document.querySelector('[data-price]');
+        if (price) price.textContent = money(match.price);
+        const submit = this.form?.querySelector('[type="submit"]');
+        if (submit) {
+          submit.disabled = !match.available;
+          submit.innerHTML = match.available ? `Add to basket — <span class="money">${money(match.price)}</span>` : 'Sold out';
+        }
+        $$('input[type=radio]:checked', this).forEach(r => {
+          const label = r.closest('.swatch-picker')?.querySelector('[data-selected]');
+          if (label) label.textContent = r.value;
+        });
         document.dispatchEvent(new CustomEvent('variant:change', { detail: match }));
       }
     }
@@ -186,6 +198,22 @@
     setImage(src) { if (this.main) this.main.src = src; }
   }
   customElements.define('product-gallery', ProductGallery);
+
+  // ---------- Accessible mobile navigation ----------
+  const menuToggle = document.querySelector('[data-menu-toggle]');
+  const mobileMenu = document.querySelector('#MobileMenu');
+  on(menuToggle, 'click', () => {
+    const open = mobileMenu.classList.toggle('is-open');
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  on(document, 'keydown', (event) => {
+    if (event.key === 'Escape' && mobileMenu?.classList.contains('is-open')) {
+      mobileMenu.classList.remove('is-open');
+      menuToggle?.setAttribute('aria-expanded', 'false');
+      menuToggle?.focus();
+    }
+  });
 
   // ---------- Init: update cart count on load ----------
   Cart.get().then(cart => {

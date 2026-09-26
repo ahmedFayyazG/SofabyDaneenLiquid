@@ -1,45 +1,15 @@
 {
   "sections": {
-    "hero": {
-      "type": "hero",
-      "settings": {
-        "eyebrow": "British-made sofas",
-        "heading": "Handmade sofas, made to order",
-        "subheading": "Design your perfect sofa in 150+ fabric colours. Free UK delivery, 3–4 weeks to your door.",
-        "button_text": "Shop all sofas",
-        "button_url": "shopify://collections/all-sofas",
-        "height": 650
-      }
-    },
-    "ranges": {
-      "type": "collection-list",
-      "settings": { "heading": "Shop by range" }
-    },
-    "new-in": {
-      "type": "featured-collection",
-      "settings": {
-        "heading": "New in",
-        "subheading": "The latest arrivals",
-        "limit": 8
-      }
-    },
-    "about": {
-      "type": "rich-text",
-      "blocks": {
-        "h": { "type": "heading", "settings": { "text": "Built in Britain, delivered to your door" }},
-        "t": { "type": "text", "settings": { "text": "<p>Every sofa is handmade in the UK from solid hardwood frames and top-grade foam. Choose from over 150 fabric colours across velvet, boucle, chenille and linen.</p>" }}
-      },
-      "block_order": ["h", "t"]
-    },
-    "faq": {
-      "type": "faq",
-      "blocks": {
-        "q1": { "type": "question", "settings": { "question": "How long does delivery take?", "answer": "<p>3 to 4 weeks for made-to-order sofas, free to UK mainland.</p>" }},
-        "q2": { "type": "question", "settings": { "question": "Can I choose left or right hand?", "answer": "<p>Yes, on corner sofas you can pick left or right hand facing at checkout.</p>" }},
-        "q3": { "type": "question", "settings": { "question": "Do you offer a warranty?", "answer": "<p>Yes, every sofa comes with a 2-year frame warranty.</p>" }}
-      },
-      "block_order": ["q1", "q2", "q3"]
-    }
-  },
-  "order": ["hero", "ranges", "new-in", "about", "faq"]
+    "hero": { "type": "hero", "settings": { "heading": "Sofas made for the way you live.", "button_text": "Discover the collection", "button_url": "shopify://collections/all", "height": 800, "overlay": 30 } },
+    "collections": { "type": "collection-list", "settings": { "eyebrow": "Shop by collection", "heading": "Find the right piece for the way you live.", "description": "Discover sofas that bring comfort, character and a little more joy into your home." } },
+    "sizes": { "type": "shop-by-size", "settings": { "eyebrow": "Shop by size", "heading": "Find the right fit for your room.", "description": "However you make yourself at home, there is a sofa to fit." }, "blocks": {
+      "two": { "type": "size", "settings": { "title": "2 Seater", "description": "Room for two." } },
+      "three": { "type": "size", "settings": { "title": "3 Seater", "description": "The everyday favourite." } },
+      "four": { "type": "size", "settings": { "title": "4 Seater", "description": "Extra room to unwind." } },
+      "corner": { "type": "size", "settings": { "title": "Corner Sofa", "description": "Made for gathering." } }
+    }, "block_order": ["two", "three", "four", "corner"] },
+    "featured": { "type": "featured-collection", "settings": { "eyebrow": "The collection", "heading": "Our bestselling sofas.", "subheading": "Find your new favourite place to sit.", "limit": 4 } },
+    "story": { "type": "editorial-story", "settings": { "eyebrow": "The Daneen story", "heading": "A home is made for living in.", "text": "<p>Beautiful sofas, thoughtful details and lasting comfort. Find the piece that feels like yours.</p>", "button_text": "Shop our sofas", "button_url": "shopify://collections/all" } },
+    "faq": { "type": "faq", "blocks": { "q1": { "type": "question", "settings": { "question": "Can I choose a different colour?", "answer": "<p>Available fabrics and colours are shown on each product page.</p>" } }, "q2": { "type": "question", "settings": { "question": "How can I check the dimensions?", "answer": "<p>Check the dimensions on the product page before ordering.</p>" } } }, "block_order": ["q1", "q2"] }
+  }, "order": ["hero", "collections", "sizes", "featured", "story", "faq"]
 }

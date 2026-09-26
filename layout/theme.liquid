@@ -40,6 +40,9 @@
     <link rel="preload" as="image" href="{{ settings.hero_image | image_url: width: 1600 }}" imagesrcset="{{ settings.hero_image | image_url: width: 800 }} 800w, {{ settings.hero_image | image_url: width: 1600 }} 1600w" imagesizes="100vw">
   {%- endif -%}
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   {%- comment -%} ---------- STYLES ---------- {%- endcomment -%}
   {{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
   <style>{% render 'critical-css' %}</style>
