@@ -71,11 +71,11 @@
                   {% assign is_colour = true %}
                 {% endif %}
                 <fieldset class="swatch-picker{% if is_colour %} swatch-picker--colour{% endif %}">
-                  <legend class="swatch-picker__label">{{ option.name | escape }} <span data-selected>{{ option.selected_value | escape }}</span></legend>
+                  <legend class="swatch-picker__label">{{ option.name | escape }} · {{ option.values.size }} options <span data-selected>{{ option.selected_value | escape }}</span></legend>
                   <div class="swatch-picker__options">
                     {% for value in option.values %}
                       <label class="swatch-picker__option{% if is_colour %} swatch-picker__option--colour{% endif %}">
-                        <input class="swatch-picker__input" type="radio" name="options[{{ option.name | escape }}]" value="{{ value.name | escape }}" {% if value.selected %}checked{% endif %} {% unless value.available %}data-unavailable="true"{% endunless %}>
+                        <input class="swatch-picker__input" type="radio" name="options[{{ option.name | escape }}]" value="{{ value.name | escape }}" {% if value.selected %}checked{% endif %}>
                         <span class="swatch-picker__chip swatch-picker__chip--text">
                           {% if is_colour %}
                             <i class="swatch-picker__tone swatch-picker__tone--{{ value.name | handleize }}" aria-hidden="true" {% if value.swatch.color %}style="background-color:{{ value.swatch.color }}"{% elsif value.swatch.image %}style="background-image:url('{{ value.swatch.image | image_url: width: 80 }}')"{% endif %}></i>
