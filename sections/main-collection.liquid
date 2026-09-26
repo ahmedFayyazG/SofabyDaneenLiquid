@@ -17,7 +17,8 @@
         {%- assign sort_options = 'manual|featured,best-selling|best_selling,title-ascending|az,title-descending|za,price-ascending|price_ascending,price-descending|price_descending,created-descending|date_descending' | split: ',' -%}
         {%- for pair in sort_options -%}
           {%- assign parts = pair | split: '|' -%}
-          <option value="{{ parts[0] }}"{% if collection.sort_by == parts[0] or collection.default_sort_by == parts[0] and collection.sort_by == blank %} selected{% endif %}>{{ ('collections.sorting.' | append: parts[1]) | t }}</option>
+          {%- assign sort_key = 'collections.sorting.' | append: parts[1] -%}
+          <option value="{{ parts[0] }}"{% if collection.sort_by == parts[0] or collection.default_sort_by == parts[0] and collection.sort_by == blank %} selected{% endif %}>{{ sort_key | t }}</option>
         {%- endfor -%}
       </select>
     </form>
