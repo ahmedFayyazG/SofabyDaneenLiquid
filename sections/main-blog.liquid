@@ -1,0 +1,21 @@
+<div class="container" style="padding:3rem 20px">
+  {% render 'breadcrumbs' %}
+  <h1>{{ blog.title }}</h1>
+  <div class="grid grid--3" style="margin-top:2rem">
+    {%- for article in blog.articles -%}
+      <a href="{{ article.url }}" class="product-card">
+        {%- if article.image -%}
+          <div class="product-card__media"><img src="{{ article.image | image_url: width: 500 }}" alt="{{ article.image.alt | escape }}" width="500" height="400" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>
+        {%- endif -%}
+        <div class="product-card__info">
+          <h3 class="product-card__title" style="font-family:var(--font-heading);font-size:1.15rem">{{ article.title }}</h3>
+          <div class="text-muted" style="font-size:.85rem">{{ article.published_at | date: '%B %d, %Y' }}</div>
+        </div>
+      </a>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Blog", "settings": [] }
+{% endschema %}

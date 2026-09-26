@@ -1,0 +1,18 @@
+{
+  "current": {
+    "color_background": "#ffffff",
+    "color_text": "#111111",
+    "color_primary": "#1a1a1a",
+    "color_accent": "#c9a961",
+    "color_border": "#e5e5e5"
+  },
+  "presets": {
+    "Default": {
+      "color_background": "#ffffff",
+      "color_text": "#111111",
+      "color_primary": "#1a1a1a",
+      "color_accent": "#c9a961",
+      "color_border": "#e5e5e5"
+    }
+  }
+}

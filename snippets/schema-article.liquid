@@ -1,0 +1,21 @@
+{%- if article -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ article.title | json }},
+  "author": {"@type":"Person","name":{{ article.author | json }}},
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  {%- if article.image -%}
+  "image": "https:{{ article.image | image_url: width: 1200 }}",
+  {%- endif -%}
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }}
+    {%- if settings.logo -%},"logo":{"@type":"ImageObject","url":"https:{{ settings.logo | image_url: width: 500 }}"}{%- endif -%}
+  },
+  "mainEntityOfPage": {"@type":"WebPage","@id":"{{ shop.url }}{{ article.url }}"}
+}
+</script>
+{%- endif -%}

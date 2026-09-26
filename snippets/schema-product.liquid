@@ -1,0 +1,77 @@
+{%- if product -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncatewords: 60 | json }},
+  "sku": {{ product.selected_or_first_available_variant.sku | json }},
+  {%- if product.selected_or_first_available_variant.barcode -%}
+  "gtin13": {{ product.selected_or_first_available_variant.barcode | json }},
+  {%- endif -%}
+  "mpn": {{ product.selected_or_first_available_variant.sku | json }},
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  },
+  {%- if product.metafields.custom.range -%}
+  "category": {{ product.type | append: ' - ' | append: product.metafields.custom.range | json }},
+  {%- else -%}
+  "category": {{ product.type | json }},
+  {%- endif -%}
+  {%- if product.featured_image -%}
+  "image": [
+    {%- for img in product.images limit: 6 -%}
+      "https:{{ img | image_url: width: 1200 }}"{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ],
+  {%- endif -%}
+  "url": "{{ shop.url }}{{ product.url }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "lowPrice": {{ product.price_min | money_without_currency | remove: ',' | json }},
+    "highPrice": {{ product.price_max | money_without_currency | remove: ',' | json }},
+    "offerCount": {{ product.variants.size }},
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": "{{ shop.url }}{{ product.url }}",
+    "seller": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }}
+    },
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "0.00",
+        "currency": {{ cart.currency.iso_code | json }}
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "GB"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {"@type": "QuantitativeValue", "minValue": 0, "maxValue": 2, "unitCode": "DAY"},
+        "transitTime": {"@type": "QuantitativeValue", "minValue": 14, "maxValue": 28, "unitCode": "DAY"}
+      }
+    }
+  }
+  {%- if product.metafields.reviews.rating_count and product.metafields.reviews.rating_count > 0 -%}
+  ,"aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ product.metafields.reviews.rating.value | json }},
+    "reviewCount": {{ product.metafields.reviews.rating_count | json }}
+  }
+  {%- endif -%}
+  {%- if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm -%}
+  ,"additionalProperty": [
+    {%- assign props = '' -%}
+    {%- if product.metafields.custom.width_cm -%}{"@type":"PropertyValue","name":"Width","value":"{{ product.metafields.custom.width_cm }} cm"}{%- assign props = 'x' -%}{%- endif -%}
+    {%- if product.metafields.custom.depth_cm -%}{% if props != '' %},{% endif %}{"@type":"PropertyValue","name":"Depth","value":"{{ product.metafields.custom.depth_cm }} cm"}{%- assign props = 'x' -%}{%- endif -%}
+    {%- if product.metafields.custom.height_cm -%}{% if props != '' %},{% endif %}{"@type":"PropertyValue","name":"Height","value":"{{ product.metafields.custom.height_cm }} cm"}{%- endif -%}
+  ]
+  {%- endif -%}
+}
+</script>
+{%- endif -%}

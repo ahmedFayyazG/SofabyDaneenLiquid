@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": { "type": "main-product" },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "How long does delivery take?", "answer": "<p>3 to 4 weeks, free to UK mainland.</p>" }},
+        "q2": { "type": "question", "settings": { "question": "How do I clean it?", "answer": "<p>Vacuum weekly, spot-clean with upholstery shampoo.</p>" }},
+        "q3": { "type": "question", "settings": { "question": "What's the warranty?", "answer": "<p>Every sofa has a 2-year frame warranty.</p>" }}
+      },
+      "block_order": ["q1", "q2", "q3"]
+    }
+  },
+  "order": ["main", "faq"]
+}

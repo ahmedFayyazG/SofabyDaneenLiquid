@@ -1,0 +1,39 @@
+<a href="{{ product.url }}" class="product-card">
+  <div class="product-card__media">
+    {%- if product.compare_at_price > product.price -%}
+      <span class="product-card__badge product-card__badge--sale">Sale</span>
+    {%- elsif product.tags contains 'new' -%}
+      <span class="product-card__badge">New</span>
+    {%- endif -%}
+    {%- if product.featured_image -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 500 }}"
+        srcset="{{ product.featured_image | image_url: width: 300 }} 300w, {{ product.featured_image | image_url: width: 500 }} 500w, {{ product.featured_image | image_url: width: 800 }} 800w"
+        sizes="(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        width="500"
+        height="{{ 500 | divided_by: product.featured_image.aspect_ratio | round }}"
+        loading="lazy">
+    {%- endif -%}
+  </div>
+  <div class="product-card__info">
+    <h3 class="product-card__title">{{ product.title }}</h3>
+    <div class="product-card__price money">
+      {%- if product.price_varies -%}From {{ product.price_min | money }}{%- else -%}{{ product.price | money }}{%- endif -%}
+      {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+    </div>
+    {%- assign colour_option = product.options_with_values | where: 'name', 'Colour' | first -%}
+    {%- if colour_option and colour_option.values.size > 1 -%}
+      <div class="product-card__swatches">
+        {%- for val in colour_option.values limit: 5 -%}
+          {%- if val.swatch.image -%}
+            <span class="product-card__swatch" style="background-image:url('{{ val.swatch.image | image_url: width: 40 }}')" title="{{ val }}"></span>
+          {%- elsif val.swatch.color -%}
+            <span class="product-card__swatch" style="background-color:{{ val.swatch.color }}" title="{{ val }}"></span>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if colour_option.values.size > 5 -%}<span class="text-muted" style="font-size:.75rem;align-self:center">+{{ colour_option.values.size | minus: 5 }}</span>{%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</a>

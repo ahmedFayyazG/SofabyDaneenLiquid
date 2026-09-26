@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js">
+<head>
+  {%- comment -%} ---------- CRITICAL META ---------- {%- endcomment -%}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.shopify.com">
+
+  {%- comment -%} ---------- FAVICON ---------- {%- endcomment -%}
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+  {%- endif -%}
+
+  {%- comment -%} ---------- TITLE + META DESCRIPTION ---------- {%- endcomment -%}
+  <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  {%- comment -%} ---------- SEO: OPEN GRAPH + TWITTER ---------- {%- endcomment -%}
+  {% render 'meta-tags' %}
+
+  {%- comment -%} ---------- SEO: JSON-LD STRUCTURED DATA ---------- {%- endcomment -%}
+  {% render 'schema-organization' %}
+  {% render 'schema-website' %}
+  {%- if template contains 'product' -%}{% render 'schema-product', product: product %}{%- endif -%}
+  {%- if template contains 'collection' and collection -%}{% render 'schema-collection', collection: collection %}{%- endif -%}
+  {%- if template contains 'article' and article -%}{% render 'schema-article', article: article %}{%- endif -%}
+  {% render 'schema-breadcrumbs' %}
+
+  {%- comment -%} ---------- PRELOAD CRITICAL ASSETS ---------- {%- endcomment -%}
+  <link rel="preload" as="style" href="{{ 'theme.css' | asset_url }}">
+  <link rel="preload" as="script" href="{{ 'theme.js' | asset_url }}">
+  {%- if template == 'index' and settings.hero_image -%}
+    <link rel="preload" as="image" href="{{ settings.hero_image | image_url: width: 1600 }}" imagesrcset="{{ settings.hero_image | image_url: width: 800 }} 800w, {{ settings.hero_image | image_url: width: 1600 }} 1600w" imagesizes="100vw">
+  {%- endif -%}
+
+  {%- comment -%} ---------- STYLES ---------- {%- endcomment -%}
+  {{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
+  <style>{% render 'critical-css' %}</style>
+
+  {%- comment -%} ---------- SCRIPTS ---------- {%- endcomment -%}
+  <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
+  {%- comment -%} ---------- SHOPIFY CONTENT ---------- {%- endcomment -%}
+  {{ content_for_header }}
+</head>
+
+<body class="template-{{ template.name | handle }}{% if template.suffix %} template-suffix-{{ template.suffix | handle }}{% endif %}">
+  <a class="visually-hidden skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+  {% sections 'header-group' %}
+
+  <main id="MainContent" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {%- comment -%} ---------- CART DRAWER ---------- {%- endcomment -%}
+  {% render 'cart-drawer' %}
+
+  {%- comment -%} ---------- QUICK VIEW ---------- {%- endcomment -%}
+  {% render 'quick-view' %}
+
+  <div id="Announcements" role="status" aria-live="polite" class="visually-hidden"></div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<div class="container">
+  {% render 'breadcrumbs' %}
+
+  <div class="product">
+    <product-gallery class="product__gallery">
+      <div class="gallery">
+        <div class="gallery__main">
+          {%- if product.featured_image -%}
+            <img
+              src="{{ product.featured_image | image_url: width: 1200 }}"
+              srcset="{{ product.featured_image | image_url: width: 600 }} 600w, {{ product.featured_image | image_url: width: 1200 }} 1200w, {{ product.featured_image | image_url: width: 1800 }} 1800w"
+              sizes="(min-width: 900px) 50vw, 100vw"
+              alt="{{ product.featured_image.alt | default: product.title | escape }}"
+              width="1200"
+              height="{{ 1200 | divided_by: product.featured_image.aspect_ratio | round }}"
+              loading="eager"
+              fetchpriority="high">
+          {%- endif -%}
+        </div>
+        {%- if product.images.size > 1 -%}
+          <div class="gallery__thumbs">
+            {%- for img in product.images limit: 10 -%}
+              <button class="gallery__thumb" data-src="{{ img | image_url: width: 1200 }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="View image {{ forloop.index }}">
+                <img src="{{ img | image_url: width: 200 }}" alt="" width="200" height="200" loading="lazy">
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </product-gallery>
+
+    <div class="product__details">
+      <h1 class="product__title">{{ product.title }}</h1>
+
+      <div class="product__price money" data-price>
+        {%- if product.compare_at_price > product.price -%}
+          {{ product.price | money }}
+          <s>{{ product.compare_at_price | money }}</s>
+        {%- else -%}
+          {{ product.price | money }}
+        {%- endif -%}
+      </div>
+
+      <product-form>
+        <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+          {%- if product.has_only_default_variant == false -%}
+            <swatch-picker data-variants="{{ product.variants | json | escape }}">
+              {%- for opt in product.options_with_values -%}
+                <div class="swatch-picker">
+                  <label class="swatch-picker__label">{{ opt.name }}: <span data-selected>{{ opt.selected_value }}</span></label>
+                  <div class="swatch-picker__options">
+                    {%- for val in opt.values -%}
+                      {%- assign val_handle = val | handle -%}
+                      {%- assign swatch = null -%}
+                      {%- if opt.name contains 'Colour' or opt.name contains 'Color' -%}
+                        {%- assign swatch = val.swatch -%}
+                      {%- endif -%}
+                      <label class="swatch-picker__option">
+                        <input class="swatch-picker__input visually-hidden" type="radio" name="options[{{ opt.name | escape }}]" value="{{ val | escape }}"{% if opt.selected_value == val %} checked{% endif %}>
+                        {%- if swatch and swatch.image -%}
+                          <span class="swatch-picker__chip" style="background-image:url('{{ swatch.image | image_url: width: 60 }}')" title="{{ val }}"></span>
+                        {%- elsif swatch and swatch.color -%}
+                          <span class="swatch-picker__chip" style="background-color:{{ swatch.color }}" title="{{ val }}"></span>
+                        {%- else -%}
+                          <span class="swatch-picker__chip swatch-picker__chip--text">{{ val }}</span>
+                        {%- endif -%}
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endfor -%}
+            </swatch-picker>
+          {%- endif -%}
+
+          <div class="flex" style="gap:.75rem;margin:1.5rem 0">
+            <label class="visually-hidden" for="Quantity">Quantity</label>
+            <input id="Quantity" name="quantity" type="number" value="1" min="1" style="width:80px;padding:.75em;border:1px solid var(--c-border);border-radius:var(--radius);text-align:center">
+            <button type="submit" class="btn btn--primary btn--lg" style="flex:1">
+              {%- if product.available -%}
+                {{ 'products.product.add_to_cart' | t }} — <span class="money">{{ product.selected_or_first_available_variant.price | money }}</span>
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </button>
+          </div>
+        </form>
+      </product-form>
+
+      <div class="product__description">
+        {{ product.description }}
+      </div>
+
+      {%- if product.metafields.custom.width_cm or product.metafields.custom.depth_cm or product.metafields.custom.height_cm -%}
+        <details open>
+          <summary style="cursor:pointer;font-weight:600;padding:.5rem 0">Dimensions</summary>
+          <table style="width:100%;border-collapse:collapse;margin-top:.5rem">
+            {%- if product.metafields.custom.width_cm -%}<tr><td style="padding:.4rem 0">Width</td><td style="text-align:right">{{ product.metafields.custom.width_cm }} cm</td></tr>{%- endif -%}
+            {%- if product.metafields.custom.depth_cm -%}<tr><td>Depth</td><td style="text-align:right">{{ product.metafields.custom.depth_cm }} cm</td></tr>{%- endif -%}
+            {%- if product.metafields.custom.height_cm -%}<tr><td>Height</td><td style="text-align:right">{{ product.metafields.custom.height_cm }} cm</td></tr>{%- endif -%}
+            {%- if product.metafields.custom.seat_depth_cm -%}<tr><td>Seat depth</td><td style="text-align:right">{{ product.metafields.custom.seat_depth_cm }} cm</td></tr>{%- endif -%}
+            {%- if product.metafields.custom.seats -%}<tr><td>Seats</td><td style="text-align:right">{{ product.metafields.custom.seats }}</td></tr>{%- endif -%}
+          </table>
+        </details>
+      {%- endif -%}
+
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--c-border);font-size:.9rem;color:var(--c-muted)">
+        <div>✓ Free UK mainland delivery</div>
+        <div>✓ Made in the United Kingdom</div>
+        <div>✓ 2-year frame warranty</div>
+        <div>SKU: {{ product.selected_or_first_available_variant.sku }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product page",
+  "settings": []
+}
+{% endschema %}

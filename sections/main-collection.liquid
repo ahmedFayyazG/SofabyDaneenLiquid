@@ -1,0 +1,52 @@
+<div class="container">
+  {% render 'breadcrumbs' %}
+
+  <header class="collection__header">
+    <h1>{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <div class="collection__intro">{{ collection.description }}</div>
+    {%- endif -%}
+  </header>
+
+  <div class="collection__toolbar">
+    <div class="collection__count">{{ collection.products_count }} {% if collection.products_count == 1 %}product{% else %}products{% endif %}</div>
+
+    <form>
+      <label class="visually-hidden" for="SortBy">{{ 'collections.general.sort_by' | t }}</label>
+      <select id="SortBy" name="sort_by" onchange="this.form.submit()" style="padding:.5em;border-radius:var(--radius);border:1px solid var(--c-border)">
+        {%- assign sort_options = 'manual|featured,best-selling|best_selling,title-ascending|az,title-descending|za,price-ascending|price_ascending,price-descending|price_descending,created-descending|date_descending' | split: ',' -%}
+        {%- for pair in sort_options -%}
+          {%- assign parts = pair | split: '|' -%}
+          <option value="{{ parts[0] }}"{% if collection.sort_by == parts[0] or collection.default_sort_by == parts[0] and collection.sort_by == blank %} selected{% endif %}>{{ ('collections.sorting.' | append: parts[1]) | t }}</option>
+        {%- endfor -%}
+      </select>
+    </form>
+  </div>
+
+  {%- if collection.products.size > 0 -%}
+    <div class="grid grid--4">
+      {%- for product in collection.products -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    </div>
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="pagination flex flex--between" style="margin:3rem 0">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" class="btn btn--secondary">← {{ 'general.pagination.previous' | t }}</a>{%- else -%}<span></span>{%- endif -%}
+        <span>{{ paginate.current_page }} / {{ paginate.pages }}</span>
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}" class="btn btn--secondary">{{ 'general.pagination.next' | t }} →</a>{%- else -%}<span></span>{%- endif -%}
+      </nav>
+    {%- endif -%}
+  {%- else -%}
+    <p class="text-center" style="padding:4rem 0">{{ 'collections.general.no_matches' | t }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collection page",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "min": 8, "max": 48, "step": 4, "default": 24, "label": "Products per page" }
+  ]
+}
+{% endschema %}

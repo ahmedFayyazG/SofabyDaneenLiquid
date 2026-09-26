@@ -1,0 +1,16 @@
+<article class="container" style="max-width:800px;padding:3rem 20px">
+  {% render 'breadcrumbs' %}
+  <header style="margin-bottom:2rem">
+    <div class="text-muted" style="font-size:.85rem;margin-bottom:.5rem">{{ article.published_at | date: '%B %d, %Y' }} · {{ article.author }}</div>
+    <h1>{{ article.title }}</h1>
+    {%- if article.excerpt != blank -%}<p style="font-size:1.15rem;color:var(--c-muted)">{{ article.excerpt | strip_html }}</p>{%- endif -%}
+  </header>
+  {%- if article.image -%}
+    <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.image.alt | escape }}" width="1200" height="{{ 1200 | divided_by: article.image.aspect_ratio | round }}" style="border-radius:var(--radius);margin-bottom:2rem" loading="eager">
+  {%- endif -%}
+  <div class="article__content">{{ article.content }}</div>
+</article>
+
+{% schema %}
+{ "name": "Article", "settings": [] }
+{% endschema %}

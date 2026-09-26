@@ -1,0 +1,31 @@
+{%- if collection -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ collection.title | json }},
+  "description": {{ collection.description | strip_html | truncatewords: 50 | json }},
+  "url": "{{ shop.url }}{{ collection.url }}",
+  {%- if collection.image -%}
+  "image": "https:{{ collection.image | image_url: width: 1200 }}",
+  {%- endif -%}
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ collection.all_products_count }},
+    "itemListElement": [
+      {%- for product in collection.products limit: 12 -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "url": "{{ shop.url }}{{ product.url }}",
+        "name": {{ product.title | json }},
+        {%- if product.featured_image -%}
+        "image": "https:{{ product.featured_image | image_url: width: 600 }}"
+        {%- endif -%}
+      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+}
+</script>
+{%- endif -%}

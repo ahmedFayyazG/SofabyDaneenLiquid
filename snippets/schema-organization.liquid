@@ -1,0 +1,25 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  "url": {{ shop.url | json }},
+  {%- if settings.logo -%}
+  "logo": "https:{{ settings.logo | image_url: width: 500 }}",
+  {%- endif -%}
+  "sameAs": [
+    {%- if settings.social_facebook_link != blank -%}{{ settings.social_facebook_link | json }},{%- endif -%}
+    {%- if settings.social_instagram_link != blank -%}{{ settings.social_instagram_link | json }},{%- endif -%}
+    {%- if settings.social_twitter_link != blank -%}{{ settings.social_twitter_link | json }},{%- endif -%}
+    {%- if settings.social_youtube_link != blank -%}{{ settings.social_youtube_link | json }},{%- endif -%}
+    {%- if settings.social_tiktok_link != blank -%}{{ settings.social_tiktok_link | json }}{%- endif -%}
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    {%- if settings.contact_email != blank -%}"email": {{ settings.contact_email | json }},{%- endif -%}
+    {%- if settings.contact_phone != blank -%}"telephone": {{ settings.contact_phone | json }},{%- endif -%}
+    "availableLanguage": "English"
+  }
+}
+</script>

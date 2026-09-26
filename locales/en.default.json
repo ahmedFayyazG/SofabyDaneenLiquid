@@ -1,0 +1,57 @@
+{
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "menu": "Menu",
+    "search": "Search",
+    "cart": "Cart"
+  },
+  "general": {
+    "search": {
+      "search": "Search",
+      "placeholder": "Search sofas..."
+    },
+    "cart": {
+      "title": "Your basket",
+      "empty": "Your basket is empty",
+      "subtotal": "Subtotal",
+      "checkout": "Checkout"
+    },
+    "pagination": {
+      "next": "Next",
+      "previous": "Previous"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to basket",
+      "sold_out": "Sold out",
+      "on_sale": "Sale",
+      "quantity": "Quantity",
+      "from_price": "From {{ price }}",
+      "sku": "SKU",
+      "vendor": "By",
+      "description": "Description",
+      "specifications": "Specifications",
+      "delivery": "Delivery & warranty",
+      "faqs": "FAQs"
+    }
+  },
+  "collections": {
+    "general": {
+      "no_matches": "Sorry, no products match your filters.",
+      "products_count": "{{ count }} products",
+      "sort_by": "Sort by"
+    },
+    "sorting": {
+      "featured": "Featured",
+      "best_selling": "Best selling",
+      "az": "A–Z",
+      "za": "Z–A",
+      "price_ascending": "Price: Low to high",
+      "price_descending": "Price: High to low",
+      "date_ascending": "Oldest",
+      "date_descending": "Newest"
+    }
+  }
+}
